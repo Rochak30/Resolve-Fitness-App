@@ -1,0 +1,20 @@
+// Owner: Nirajan
+
+import 'package:flutter/material.dart';
+
+class OtpVerifyScreen extends StatefulWidget {
+  const OtpVerifyScreen({super.key});
+
+  @override
+  State<OtpVerifyScreen> createState() => _OtpVerifyScreenState();
+}
+
+class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('OTP Verify Screen')),
+      body: const Center(child: Text('OTP Verify Screen')),
+    );
+  }
+}
