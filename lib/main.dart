@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:resolve/core/app_routes.dart';
+import 'package:provider/provider.dart';
+import 'package:resolve/viewmodel/profile_viewmodel.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
