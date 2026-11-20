@@ -3,7 +3,9 @@ import 'package:resolve/core/app_colors.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+
+  /// Pass null to show the button in its disabled state.
+  final VoidCallback? onPressed;
 
   const PrimaryButton({super.key, required this.text, required this.onPressed});
 
@@ -16,6 +18,7 @@ class PrimaryButton extends StatelessWidget {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
