@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
 
       // ---------- Theme ----------
       theme: ThemeData(
+        fontFamily: 'PlusJakartaSans',
         appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
       ),
 
