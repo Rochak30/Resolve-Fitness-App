@@ -18,8 +18,24 @@ class SocialMediaCard extends StatefulWidget {
   });
 
   @override
-  State<SocialMediaCard> createState() => _SocialMediaCardState();
-}
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 70,
+      child: Card(
+        // ---------- Look: white with a thin border ----------
+        color: Colors.white,
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppColors.border),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // ---------- Logo ----------
+            Image.asset(imagePath, width: 40, height: 40),
+            const SizedBox(width: 10),
 
 class _SocialMediaCardState extends State<SocialMediaCard> {
   bool _pressed = false;
