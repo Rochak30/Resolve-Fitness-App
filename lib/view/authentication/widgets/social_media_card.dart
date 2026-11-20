@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:resolve/core/app_colors.dart';
 
 class SocialMediaCard extends StatelessWidget {
   final String imagePath;
@@ -15,6 +16,14 @@ class SocialMediaCard extends StatelessWidget {
     return SizedBox(
       height: 70,
       child: Card(
+        // ---------- Look: white with a thin border ----------
+        color: Colors.white,
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppColors.border),
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
