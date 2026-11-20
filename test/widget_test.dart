@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:resolve/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    // Profile storage is mocked so the profile screen can load in tests.
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('App opens on the login screen', (WidgetTester tester) async {
     // ---------- Build the app ----------
     await tester.pumpWidget(const MyApp());
@@ -39,6 +45,6 @@ void main() {
     await tester.tap(find.text('SIGN IN'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Profile Screen'), findsWidgets);
+    expect(find.text('My Profile'), findsWidgets);
   });
 }
