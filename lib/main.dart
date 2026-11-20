@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       ),
 
       // ---------- Routes ----------
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.settings,
       routes: AppRoutes.routes,
     );
   }
