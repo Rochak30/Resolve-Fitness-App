@@ -1,23 +1,95 @@
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:resolve/core/app_colors.dart';
 import 'package:resolve/view/authentication/auth_colors.dart';
 
-/// Fixed, blurred header used by the authentication screens.
 class AuthHeader extends StatelessWidget {
   final String title;
+  final String? subtitle;
+
+  // Navigation header properties
+  final bool showBranding;
   final VoidCallback? onBack;
   final String? avatarUrl;
 
   const AuthHeader({
     super.key,
     required this.title,
+    this.subtitle,
+    this.showBranding = true,
     this.onBack,
     this.avatarUrl,
   });
 
   @override
   Widget build(BuildContext context) {
+    return showBranding
+        ? _buildBrandingHeader()
+        : _buildNavigationHeader(context);
+  }
+
+  // BRANDING HEADER
+  Widget _buildBrandingHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Wrap(
+          crossAxisAlignment: WrapCrossAlignment.end,
+          spacing: 8,
+          children: [
+            Text(
+              'RESOLVE',
+              style: TextStyle(
+                fontSize: 44,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -1.5,
+                height: 1,
+                color: AppColors.title,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Text(
+                'FITNESS APP NEPAL',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
+            height: 1.1,
+          ),
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            subtitle!,
+            style: const TextStyle(
+              fontSize: 15,
+              height: 1.45,
+              color: AppColors.grey,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  // NAVIGATION HEADER
+  Widget _buildNavigationHeader(BuildContext context) {
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
@@ -34,14 +106,14 @@ class AuthHeader extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // ---------- Back ----------
               SizedBox(
                 width: 44,
                 height: 44,
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   tooltip: 'Go back',
-                  onPressed: onBack ?? () => Navigator.of(context).maybePop(),
+                  onPressed:
+                      onBack ?? () => Navigator.of(context).maybePop(),
                   icon: const Icon(
                     Icons.arrow_back,
                     size: 24,
@@ -50,8 +122,6 @@ class AuthHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-
-              // ---------- Title ----------
               Expanded(
                 child: Text(
                   title.toUpperCase(),
@@ -67,8 +137,6 @@ class AuthHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-
-              // ---------- Avatar ----------
               _HeaderAvatar(url: avatarUrl),
             ],
           ),
@@ -78,6 +146,7 @@ class AuthHeader extends StatelessWidget {
   }
 }
 
+// AVATAR
 class _HeaderAvatar extends StatelessWidget {
   final String? url;
 
@@ -96,7 +165,7 @@ class _HeaderAvatar extends StatelessWidget {
         ),
       ),
       child: ClipOval(
-        child: url == null
+        child: url == null || url!.isEmpty
             ? const _AvatarFallback()
             : Image.network(
                 url!,
