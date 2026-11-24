@@ -10,4 +10,12 @@ class AppColors {
 
   // ---------- Text colors ----------
   static const Color grey = Color(0xFF6B7280);
+  static const Color textDark = Color(0xFF1F2A30);
+
+  // ---------- Login design colors ----------
+  static const Color background = Color(0xFFE9EDF1);
+  static const Color border = Color(0xFFD5DBE1);
+  static const Color green = Color(0xFF2E6B5E);
+  static const Color mint = Color(0xFFDDEFEA);
+  static const Color teal = Color(0xFF8FCBC4);
 }
