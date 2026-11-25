@@ -1,157 +1,130 @@
 // Owner: Aayusha
+// Settings screen – lists shortcuts to edit Training Preferences (US-1.6)
+// and Profile so users can change them after onboarding.
 
 import 'package:flutter/material.dart';
-import 'package:resolve/core/app_routes.dart';
 
-class SettingsScreen extends StatefulWidget {
+import '../../core/app_colors.dart';
+import '../../core/app_text_styles.dart';
+import '../../core/app_routes.dart';
+import '../onboarding/training_preferences_screen.dart';
+import '../profile/profile_colors.dart';
+
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
-
-  @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  bool _notifications = true;
-  bool _workoutReminders = true;
-  bool _darkMode = false;
-  String _units = 'Metric (kg, cm)';
-  bool _shareWorkouts = false;
-  bool _publicProfile = true;
-
-  void _confirmLogout() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Log out'),
-        content: const Text('Are you sure you want to log out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.login,
-                    (route) => false,
-              );
-            },
-            child: const Text('Log out', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _sectionTitle(String text) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.bold,
-          color: Colors.grey.shade600,
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ProfileColors.background,
       appBar: AppBar(
-        title: const Text('Settings'),
+        backgroundColor: ProfileColors.dark,
+        foregroundColor: Colors.white,
+        elevation: 0,
         centerTitle: true,
+        title: const Text(
+          'Settings',
+          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+        ),
       ),
       body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         children: [
-          _sectionTitle('NOTIFICATIONS'),
-          SwitchListTile(
-            secondary: const Icon(Icons.notifications_outlined),
-            title: const Text('Push notifications'),
-            value: _notifications,
-            onChanged: (v) => setState(() => _notifications = v),
-          ),
-          SwitchListTile(
-            secondary: const Icon(Icons.alarm),
-            title: const Text('Workout reminders'),
-            value: _workoutReminders,
-            onChanged: (v) => setState(() => _workoutReminders = v),
-          ),
-
-          _sectionTitle('PREFERENCES'),
-          SwitchListTile(
-            secondary: const Icon(Icons.dark_mode_outlined),
-            title: const Text('Dark mode'),
-            value: _darkMode,
-            onChanged: (v) => setState(() => _darkMode = v),
-          ),
-          ListTile(
-            leading: const Icon(Icons.straighten),
-            title: const Text('Units'),
-            trailing: DropdownButton<String>(
-              value: _units,
-              underline: const SizedBox(),
-              items: const [
-                DropdownMenuItem(
-                  value: 'Metric (kg, cm)',
-                  child: Text('Metric (kg, cm)'),
-                ),
-                DropdownMenuItem(
-                  value: 'Imperial (lb, ft)',
-                  child: Text('Imperial (lb, ft)'),
-                ),
-              ],
-              onChanged: (v) => setState(() => _units = v!),
-            ),
-          ),
-
-          _sectionTitle('PRIVACY'),
-          SwitchListTile(
-            secondary: const Icon(Icons.share_outlined),
-            title: const Text('Share workout activity'),
-            value: _shareWorkouts,
-            onChanged: (v) => setState(() => _shareWorkouts = v),
-          ),
-          SwitchListTile(
-            secondary: const Icon(Icons.visibility_outlined),
-            title: const Text('Public profile'),
-            value: _publicProfile,
-            onChanged: (v) => setState(() => _publicProfile = v),
-          ),
-
-          _sectionTitle('ABOUT'),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined),
-            title: const Text('Privacy policy'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('App version'),
-            trailing: const Text('1.0.0'),
-          ),
-
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+          _SectionLabel(label: 'Training'),
+          _SettingsTile(
+            icon: Icons.tune,
+            title: 'Training Preferences',
+            subtitle: 'Types, fitness level & goal',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const TrainingPreferencesScreen(isEditing: true),
               ),
-              onPressed: _confirmLogout,
-              icon: const Icon(Icons.logout),
-              label: const Text('Log out'),
             ),
           ),
           const SizedBox(height: 24),
+
+          _SectionLabel(label: 'Profile'),
+          _SettingsTile(
+            icon: Icons.person_outline,
+            title: 'Edit Profile',
+            subtitle: 'Name, age, height & body metrics',
+            onTap: () => Navigator.of(context).pushNamed(AppRoutes.editProfile),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  const _SectionLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Text(
+        label.toUpperCase(),
+        style: AppTextStyles.labelSm.copyWith(
+          color: ProfileColors.mid,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _SettingsTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: ProfileColors.border),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 22, color: ProfileColors.accent),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.labelMd
+                        .copyWith(color: ProfileColors.dark),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.bodySm
+                        .copyWith(color: ProfileColors.mid),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 20, color: ProfileColors.border),
+          ],
+        ),
       ),
     );
   }
