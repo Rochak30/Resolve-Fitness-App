@@ -43,7 +43,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               // ---------- Header ----------
               DashboardHeader(
-                name: 'Michael Bernando',
+                name: 'Resolve User',
                 onNotificationsTap: () => _showComingSoon('Notifications'),
               ),
               const SizedBox(height: 20),
@@ -60,15 +60,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 actionText: 'View all',
                 onActionTap: () => _showComingSoon('Workout plans'),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 15),
               WorkoutPlanCard(
-                imagePath: 'assets/images/chest_workout.jpg',
+                imagePath: 'assets/images/chest_workout_2.png',
                 title: 'Chest workout',
                 details: '5–8 min · Strength training',
                 level: 'Intermediate',
                 onStart: () => _showComingSoon('Workouts'),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 40),
 
               // ---------- Today's meals ----------
               SectionHeader(

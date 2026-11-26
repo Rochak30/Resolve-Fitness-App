@@ -36,11 +36,11 @@ class WorkoutPlanCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Stack(
               children: [
-                Image.asset(
-                  imagePath,
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+                // AspectRatio keeps the picture's own shape (3:2),
+                // so the whole image shows on every phone width.
+                AspectRatio(
+                  aspectRatio: 3 / 2,
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
                 ),
                 Positioned(
                   top: 10,
