@@ -25,6 +25,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String editProfile = '/edit-profile';
   static const String settings = '/settings';
+  static const String dashboard = '/dashboard';
 
   // ---------- Route table ----------
   static final Map<String, WidgetBuilder> routes = {
@@ -41,5 +42,6 @@ class AppRoutes {
     profile: (context) => const ProfileScreen(),
     editProfile: (context) => const EditProfileScreen(),
     settings: (context) => const SettingsScreen(),
+    dashboard: (context) => const DashboardScreen(),
   };
 }

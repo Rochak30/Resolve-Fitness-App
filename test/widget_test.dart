@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:resolve/main.dart';
+import 'package:resolve/view/dashboard/dashboard_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -32,9 +33,7 @@ void main() {
     expect(find.text('Please enter your passkey'), findsOneWidget);
   });
 
-  testWidgets('Valid sign in opens the profile screen', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('Valid sign in opens the dashboard', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
     // ---------- Fill in the form ----------
@@ -45,6 +44,21 @@ void main() {
     await tester.tap(find.text('SIGN IN'));
     await tester.pumpAndSettle();
 
-    expect(find.text('My Profile'), findsWidgets);
+    expect(find.byType(DashboardScreen), findsOneWidget);
+  });
+
+  testWidgets('Dashboard shows today\'s workout and meals', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: DashboardScreen()));
+
+    // ---------- Workout card ----------
+    expect(find.text('Chest workout'), findsOneWidget);
+    expect(find.text('Start Workout'), findsOneWidget);
+
+    // ---------- Meals card ----------
+    await tester.ensureVisible(find.text('Lunch'));
+    expect(find.text("Today's Meals"), findsOneWidget);
+    expect(find.text('Breakfast'), findsOneWidget);
   });
 }
