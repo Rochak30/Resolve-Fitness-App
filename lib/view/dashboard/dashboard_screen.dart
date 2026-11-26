@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:resolve/core/app_colors.dart';
+import 'package:resolve/view/dashboard/widgets/dashboard_header.dart';
 import 'package:resolve/view/dashboard/widgets/section_header.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -29,6 +30,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ---------- Header ----------
+              DashboardHeader(
+                name: 'Michael Bernando',
+                onNotificationsTap: () => _showComingSoon('Notifications'),
+              ),
+              const SizedBox(height: 20),
+
               // ---------- Quick access (Nirajan) ----------
               // Steps, calories and heart rate cards go here.
 
