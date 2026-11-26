@@ -1,6 +1,3 @@
-// ViewModel for US-1.6 (Training Preferences).
-// Mirrors the patterns in ProfileViewModel.
-
 import 'package:flutter/foundation.dart';
 
 import '../model/training_preferences.dart';
