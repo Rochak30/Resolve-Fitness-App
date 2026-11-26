@@ -1,7 +1,3 @@
-// US-1.6 — Training Preferences onboarding screen.
-// Redesigned to match the "Gym & Strength" slide layout.
-// Logic: TrainingPreferencesViewModel (unchanged). isEditing mode kept intact.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -270,7 +266,7 @@ class _TrainingPreferencesScreenState
                     height: imgH,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (ctx, err, st) => Container(
                       height: imgH,
                       decoration: BoxDecoration(
                         color: ProfileColors.accent.withAlpha(40),
