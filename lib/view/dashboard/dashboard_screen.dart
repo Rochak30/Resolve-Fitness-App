@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:resolve/core/app_colors.dart';
+import 'package:resolve/core/app_routes.dart';
+import 'package:resolve/view/dashboard/widgets/dashboard_bottom_nav.dart';
 import 'package:resolve/view/dashboard/widgets/dashboard_header.dart';
 import 'package:resolve/view/dashboard/widgets/section_header.dart';
 
@@ -60,6 +62,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
         ),
+      ),
+
+      // ---------- Bottom navigation ----------
+      floatingActionButton: ScanButton(
+        onPressed: () => _showComingSoon('QR check-in'),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: DashboardBottomNav(
+        onWorkoutTap: () => _showComingSoon('Workouts'),
+        onMealTap: () => _showComingSoon('Meals'),
+        onProfileTap: () => Navigator.pushNamed(context, AppRoutes.profile),
       ),
     );
   }
