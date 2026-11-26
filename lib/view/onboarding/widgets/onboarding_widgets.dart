@@ -312,11 +312,20 @@ class OnboardingInfoNote extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// OnboardingDropdownField – a tappable dropdown field card (visual only unless
-// onChanged is wired).  Used in the 2×2 preference grid.
+// OnboardingDropdownField – animated overlay dropdown (fade + slide + scale).
+//
+// • Opens as an Overlay so it never pushes other fields down.
+// • Chevron rotates 180° when open (AnimatedRotation).
+// • Only one dropdown can be open at a time (_activeDropdown notifier).
+// • Tapping outside or selecting an option closes with a quick fade-out.
+// • No new packages — pure Flutter.
 // ---------------------------------------------------------------------------
 
-class OnboardingDropdownField<T> extends StatelessWidget {
+// File-level notifier: tracks the one state that currently owns the overlay.
+// When a new dropdown opens it asks the previous one to close first.
+final _activeDropdown = ValueNotifier<_OnboardingDropdownFieldState?>(null);
+
+class OnboardingDropdownField<T> extends StatefulWidget {
   final IconData icon;
   final String label;
   final String hint;
@@ -337,53 +346,283 @@ class OnboardingDropdownField<T> extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 68),
-      decoration: BoxDecoration(
-        color: ProfileColors.background,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: ProfileColors.border),
+  State<OnboardingDropdownField<T>> createState() =>
+      _OnboardingDropdownFieldState<T>();
+}
+
+class _OnboardingDropdownFieldState<T>
+    extends State<OnboardingDropdownField<T>> with SingleTickerProviderStateMixin {
+  // ── Animation ──────────────────────────────────────────────────────────────
+  late final AnimationController _ctrl;
+  late final Animation<double> _fadeAnim;
+  late final Animation<double> _scaleAnim;
+  late final Animation<Offset> _slideAnim;
+
+  // ── Overlay ────────────────────────────────────────────────────────────────
+  OverlayEntry? _overlay;
+  bool _isOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _fadeAnim = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
+    _scaleAnim = Tween<double>(begin: 0.95, end: 1.0)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, -0.05),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    // Remove overlay without animation (widget is leaving the tree).
+    _removeOverlayImmediate();
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  // ── Overlay lifecycle ──────────────────────────────────────────────────────
+
+  void _removeOverlayImmediate() {
+    _overlay?.remove();
+    _overlay = null;
+    _isOpen = false;
+    if (_activeDropdown.value == this) _activeDropdown.value = null;
+  }
+
+  void _openOverlay() {
+    // Close any other open dropdown first.
+    final other = _activeDropdown.value;
+    if (other != null && other != this) {
+      other._closeWithAnimation();
+    }
+
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return;
+
+    final offset = box.localToGlobal(Offset.zero);
+    final size = box.size;
+
+    _overlay = OverlayEntry(
+      builder: (_) => _DropdownOverlay<T>(
+        fieldOffset: offset,
+        fieldWidth: size.width,
+        fieldHeight: size.height,
+        items: widget.items,
+        itemLabel: widget.itemLabel,
+        selectedValue: widget.value,
+        fadeAnim: _fadeAnim,
+        scaleAnim: _scaleAnim,
+        slideAnim: _slideAnim,
+        onSelect: (item) {
+          widget.onChanged?.call(item);
+          _closeWithAnimation();
+        },
+        onDismiss: _closeWithAnimation,
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<T>(
-          value: value,
-          isExpanded: true,
-          icon: Icon(Icons.keyboard_arrow_down_rounded,
-              size: 18, color: ProfileColors.mid),
+    );
+
+    Overlay.of(context).insert(_overlay!);
+    _ctrl.forward(from: 0);
+    setState(() => _isOpen = true);
+    _activeDropdown.value = this;
+  }
+
+  void _closeWithAnimation() {
+    if (_overlay == null) return;
+    _ctrl.reverse().then((_) {
+      _overlay?.remove();
+      _overlay = null;
+      if (_activeDropdown.value == this) _activeDropdown.value = null;
+      if (mounted) setState(() => _isOpen = false);
+    });
+  }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
+
+  @override
+  Widget build(BuildContext context) {
+    final displayText = widget.value != null
+        ? widget.itemLabel(widget.value as T)
+        : widget.hint;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _isOpen ? _closeWithAnimation : _openOverlay,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        constraints: const BoxConstraints(minHeight: 68),
+        decoration: BoxDecoration(
+          color: ProfileColors.background,
           borderRadius: BorderRadius.circular(10),
-          dropdownColor: Colors.white,
-          onChanged: onChanged,
-          hint: _FieldContent(icon: icon, label: label, hint: hint),
-          selectedItemBuilder: value == null
-              ? null
-              : (_) => items
-                  .map(
-                    (item) => _FieldContent(
-                      icon: icon,
-                      label: label,
-                      hint: itemLabel(item),
-                    ),
-                  )
-                  .toList(),
-          items: items
-              .map(
-                (item) => DropdownMenuItem<T>(
-                  value: item,
-                  child: Text(
-                    itemLabel(item),
-                    style: AppTextStyles.labelMd
-                        .copyWith(color: ProfileColors.dark),
-                  ),
-                ),
-              )
-              .toList(),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          border: Border.all(
+            color: _isOpen ? ProfileColors.accent : ProfileColors.border,
+            width: _isOpen ? 1.5 : 1.0,
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: _FieldContent(
+                icon: widget.icon,
+                label: widget.label,
+                hint: displayText,
+              ),
+            ),
+            AnimatedRotation(
+              turns: _isOpen ? 0.5 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 18,
+                color: ProfileColors.mid,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// _DropdownOverlay – the animated panel inserted into the Overlay.
+// ---------------------------------------------------------------------------
+
+class _DropdownOverlay<T> extends StatelessWidget {
+  final Offset fieldOffset;
+  final double fieldWidth;
+  final double fieldHeight;
+  final List<T> items;
+  final String Function(T) itemLabel;
+  final T? selectedValue;
+  final Animation<double> fadeAnim;
+  final Animation<double> scaleAnim;
+  final Animation<Offset> slideAnim;
+  final ValueChanged<T> onSelect;
+  final VoidCallback onDismiss;
+
+  const _DropdownOverlay({
+    required this.fieldOffset,
+    required this.fieldWidth,
+    required this.fieldHeight,
+    required this.items,
+    required this.itemLabel,
+    required this.selectedValue,
+    required this.fadeAnim,
+    required this.scaleAnim,
+    required this.slideAnim,
+    required this.onSelect,
+    required this.onDismiss,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenH = MediaQuery.of(context).size.height;
+    final panelTop = fieldOffset.dy + fieldHeight + 4;
+    // Clamp so the list never overflows off the bottom of the screen.
+    final maxPanelH = (screenH - panelTop - 20).clamp(80.0, 260.0);
+
+    return Stack(
+      children: [
+        // ── Transparent barrier: tap outside → dismiss ──────────────────
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: onDismiss,
+          ),
+        ),
+
+        // ── Animated dropdown panel ─────────────────────────────────────
+        Positioned(
+          left: fieldOffset.dx,
+          top: panelTop,
+          width: fieldWidth,
+          child: FadeTransition(
+            opacity: fadeAnim,
+            child: SlideTransition(
+              position: slideAnim,
+              child: ScaleTransition(
+                scale: scaleAnim,
+                alignment: Alignment.topCenter,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    constraints: BoxConstraints(maxHeight: maxPanelH),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: ProfileColors.dark.withAlpha(28),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        itemCount: items.length,
+                        itemBuilder: (_, i) {
+                          final item = items[i];
+                          final isSelected = item == selectedValue;
+                          return Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => onSelect(item),
+                              splashColor: ProfileColors.accent.withAlpha(50),
+                              highlightColor: ProfileColors.accent.withAlpha(25),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 11,
+                                ),
+                                color: isSelected
+                                    ? ProfileColors.accent.withAlpha(35)
+                                    : Colors.transparent,
+                                child: Text(
+                                  itemLabel(item),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.labelMd.copyWith(
+                                    color: isSelected
+                                        ? ProfileColors.dark
+                                        : ProfileColors.mid,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// _FieldContent – icon + label + current value/hint text inside the trigger
+// ---------------------------------------------------------------------------
 
 class _FieldContent extends StatelessWidget {
   final IconData icon;
