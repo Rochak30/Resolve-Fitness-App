@@ -6,6 +6,7 @@ import 'package:resolve/core/app_routes.dart';
 import 'package:resolve/view/dashboard/widgets/dashboard_bottom_nav.dart';
 import 'package:resolve/view/dashboard/widgets/dashboard_header.dart';
 import 'package:resolve/view/dashboard/widgets/section_header.dart';
+import 'package:resolve/view/dashboard/widgets/workout_plan_card.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -50,6 +51,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 title: 'Personalized workout plan',
                 actionText: 'View all',
                 onActionTap: () => _showComingSoon('Workout plans'),
+              ),
+              const SizedBox(height: 12),
+              WorkoutPlanCard(
+                imagePath: 'assets/images/chest_workout.jpg',
+                title: 'Chest workout',
+                details: '5–8 min · Strength training',
+                level: 'Intermediate',
+                onStart: () => _showComingSoon('Workouts'),
               ),
               const SizedBox(height: 24),
 
