@@ -3,9 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:resolve/core/app_colors.dart';
 import 'package:resolve/core/app_routes.dart';
+import 'package:resolve/model/meal.dart';
 import 'package:resolve/view/dashboard/widgets/dashboard_bottom_nav.dart';
 import 'package:resolve/view/dashboard/widgets/dashboard_header.dart';
 import 'package:resolve/view/dashboard/widgets/section_header.dart';
+import 'package:resolve/view/dashboard/widgets/todays_meals_card.dart';
 import 'package:resolve/view/dashboard/widgets/workout_plan_card.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -16,6 +18,12 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  // ---------- Hardcoded data (Sprint 1 has no backend) ----------
+  final List<Meal> _meals = const [
+    Meal(name: 'Breakfast', foods: 'Oats, Berries & Whey', calories: 420),
+    Meal(name: 'Lunch', foods: 'Grilled Chicken & Brown Rice', calories: 680),
+  ];
+
   // ---------- Actions ----------
   void _showComingSoon(String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -67,6 +75,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 title: "Today's Meals",
                 actionText: '+ Log meal',
                 onActionTap: () => _showComingSoon('Meal logging'),
+              ),
+              const SizedBox(height: 12),
+              TodaysMealsCard(
+                caloriesEaten: 1840,
+                calorieGoal: 2400,
+                proteinGrams: 95,
+                carbsGrams: 180,
+                meals: _meals,
+                onLogMeal: () => _showComingSoon('Meal logging'),
               ),
             ],
           ),

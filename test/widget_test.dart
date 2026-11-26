@@ -46,4 +46,19 @@ void main() {
 
     expect(find.byType(DashboardScreen), findsOneWidget);
   });
+
+  testWidgets('Dashboard shows today\'s workout and meals', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: DashboardScreen()));
+
+    // ---------- Workout card ----------
+    expect(find.text('Chest workout'), findsOneWidget);
+    expect(find.text('Start Workout'), findsOneWidget);
+
+    // ---------- Meals card ----------
+    await tester.ensureVisible(find.text('Lunch'));
+    expect(find.text("Today's Meals"), findsOneWidget);
+    expect(find.text('Breakfast'), findsOneWidget);
+  });
 }
