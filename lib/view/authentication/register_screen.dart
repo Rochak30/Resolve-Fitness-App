@@ -108,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
     // Sprint 1 has no backend, so a valid form starts the athlete profile.
-    Navigator.pushReplacementNamed(context, AppRoutes.profile);
+    Navigator.pushReplacementNamed(context, AppRoutes.trainingPreferences);
   }
 
   void _goToLogin() {

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/app_routes.dart';
 import '../../model/user_profile.dart';
 import '../../viewmodel/profile_viewmodel.dart';
+import '../../viewmodel/training_preferences_viewmodel.dart';
+import '../onboarding/training_preferences_screen.dart';
 import 'edit_profile_screen.dart';
 import 'profile_colors.dart';
 import 'widgets/profile_header.dart';
@@ -23,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProfileViewModel>().load();
+      context.read<TrainingPreferencesViewModel>().load();
     });
   }
 
@@ -39,6 +43,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'My Profile',
           style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Settings',
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.of(context).pushNamed(AppRoutes.settings),
+          ),
+        ],
       ),
       body: Consumer<ProfileViewModel>(
         builder: (context, vm, _) {
@@ -107,6 +118,9 @@ class _ProfileContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final trainingPrefs =
+        context.watch<TrainingPreferencesViewModel>().preferences;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
@@ -158,7 +172,74 @@ class _ProfileContent extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
+
+          // ── Training Preferences summary (US-1.6) ──────────────────────
+          const ProfileSectionLabel(label: 'Training Preferences'),
+          const SizedBox(height: 10),
+          if (trainingPrefs != null) ...[
+            ProfileInfoCard(
+              children: [
+                ProfileInfoRow(
+                  icon: Icons.track_changes_outlined,
+                  label: 'Goal',
+                  value: trainingPrefs.fitnessGoal.label,
+                ),
+                const ProfileCardDivider(),
+                ProfileInfoRow(
+                  icon: Icons.fitness_center_outlined,
+                  label: 'Level',
+                  value: trainingPrefs.fitnessLevel.label,
+                ),
+                const ProfileCardDivider(),
+                ProfileInfoRow(
+                  icon: Icons.list_alt_outlined,
+                  label: 'Types',
+                  value: trainingPrefs.trainingTypes
+                      .map((t) => t.label)
+                      .join(', '),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) =>
+                      const TrainingPreferencesScreen(isEditing: true),
+                ),
+              ),
+              icon: const Icon(Icons.tune, size: 18),
+              label: const Text('Edit Training Preferences'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: ProfileColors.dark,
+                side: const BorderSide(color: ProfileColors.border),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ] else ...[
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const TrainingPreferencesScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Set Training Preferences'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: ProfileColors.dark,
+                side: const BorderSide(color: ProfileColors.border),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 20),
 
           ElevatedButton.icon(
             onPressed: onEdit,
@@ -168,7 +249,8 @@ class _ProfileContent extends StatelessWidget {
               backgroundColor: ProfileColors.accent,
               foregroundColor: ProfileColors.dark,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              textStyle:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

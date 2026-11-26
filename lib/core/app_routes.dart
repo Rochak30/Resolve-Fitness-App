@@ -17,7 +17,10 @@ class AppRoutes {
   static const String otpVerify = '/otp-verify';
   static const String forgotPassword = '/forgot-password';
   static const String resetPassword = '/reset-password';
+<<<<<<< HEAD
   static const String physicalDetails = '/physical-details';
+=======
+>>>>>>> 0fba810a284cb06553f75bf99dd6df919cfea247
   static const String trainingPreferences = '/training-preferences';
   static const String profile = '/profile';
   static const String editProfile = '/edit-profile';
@@ -30,7 +33,10 @@ class AppRoutes {
     otpVerify: (context) => const OtpVerifyScreen(),
     forgotPassword: (context) => const ForgotPasswordScreen(),
     resetPassword: (context) => const ResetPasswordScreen(),
+<<<<<<< HEAD
     physicalDetails: (context) => const PhysicalDetailsScreen(),
+=======
+>>>>>>> 0fba810a284cb06553f75bf99dd6df919cfea247
     trainingPreferences: (context) => const TrainingPreferencesScreen(),
     profile: (context) => const ProfileScreen(),
     editProfile: (context) => const EditProfileScreen(),

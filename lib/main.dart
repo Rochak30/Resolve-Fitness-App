@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resolve/core/app_routes.dart';
 import 'package:resolve/viewmodel/profile_viewmodel.dart';
+import 'package:resolve/viewmodel/training_preferences_viewmodel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => ProfileViewModel())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+        ChangeNotifierProvider(create: (_) => TrainingPreferencesViewModel()),
+      ],
+      
       child: MaterialApp(
         // ---------- App settings ----------
         debugShowCheckedModeBanner: false,
@@ -26,7 +31,7 @@ class MyApp extends StatelessWidget {
         ),
 
         // ---------- Routes ----------
-        initialRoute: AppRoutes.login,
+        initialRoute: AppRoutes.trainingPreferences,
         routes: AppRoutes.routes,
       ),
     );
