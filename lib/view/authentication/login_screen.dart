@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _signIn() {
     if (_formKey.currentState!.validate()) {
       // Sprint 1 has no backend, so any valid email and passkey signs in.
-      Navigator.pushReplacementNamed(context, AppRoutes.profile);
+      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     }
   }
 

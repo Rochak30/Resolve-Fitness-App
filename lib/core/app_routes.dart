@@ -4,6 +4,7 @@ import 'package:resolve/view/authentication/login_screen.dart';
 import 'package:resolve/view/authentication/otp_verify_screen.dart';
 import 'package:resolve/view/authentication/register_screen.dart';
 import 'package:resolve/view/authentication/reset_password_screen.dart';
+import 'package:resolve/view/dashboard/dashboard_screen.dart';
 import 'package:resolve/view/profile/edit_profile_screen.dart';
 import 'package:resolve/view/profile/profile_screen.dart';
 import 'package:resolve/view/settings/settings_screen.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String editProfile = '/edit-profile';
   static const String settings = '/settings';
+  static const String dashboard = '/dashboard';
 
   // ---------- Route table ----------
   static final Map<String, WidgetBuilder> routes = {
@@ -29,5 +31,6 @@ class AppRoutes {
     profile: (context) => const ProfileScreen(),
     editProfile: (context) => const EditProfileScreen(),
     settings: (context) => const SettingsScreen(),
+    dashboard: (context) => const DashboardScreen(),
   };
 }
