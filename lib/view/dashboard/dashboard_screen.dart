@@ -52,7 +52,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 20),
 
               // ---------- Quick access (Nirajan) ----------
-<<<<<<< HEAD
               const QuickStatsRow(),
               const SizedBox(height: 24),
 
@@ -64,12 +63,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 todayIndex: 5,
               ),
               const SizedBox(height: 24),
-=======
-              // Steps, calories and heart rate cards go here.
-
-              // ---------- Weekly progress (Nirajan) ----------
-              // Gym attendance and the weekly calories chart go here.
->>>>>>> 10bbaeffef6036c15a2d494072710b6987b8e494
 
               // ---------- Today's workout ----------
               SectionHeader(
@@ -108,8 +101,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
 
       // ---------- Bottom navigation ----------
-      floatingActionButton: ScanButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () => _showComingSoon('QR check-in'),
+        child: const Icon(Icons.qr_code_scanner),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: DashboardBottomNav(
